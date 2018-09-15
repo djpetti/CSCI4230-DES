@@ -17,10 +17,14 @@ class FeistelCipher {
   // Args:
   //  block: The 8-bit input block.
   void SetInput(uint8_t block);
-  // Performs a round of the cipher.
+  // Performs an encryption round of the cipher.
   // Args:
   //  key: The 8-bit subkey to use for the round.
-  void DoRound(uint8_t key);
+  void DoEncRound(uint8_t key);
+  // Performs a decryption round of the cipher.
+  // Args:
+  //  key: The 8-bit subkey to use for the round.
+  void DoDecRound(uint8_t key);
   // Gets the current output of the cipher.
   // Returns:
   //  The 8-bit output block.

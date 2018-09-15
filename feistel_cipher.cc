@@ -1,7 +1,5 @@
 #include "feistel_cipher.h"
 
-#include <algorithm>
-
 namespace hw1 {
 namespace {
 
@@ -25,15 +23,18 @@ void FeistelCipher::SetInput(uint8_t block) {
   left_state_ = state >> 4;
 }
 
-void FeistelCipher::DoRound(uint8_t key) {
-  // Run the F function.
-  left_state_ = f_function_.Call(left_state_, key);
+void FeistelCipher::DoEncRound(uint8_t key) {
+  // Update the state.
+  const uint8_t new_right = f_function_.Call(right_state_, key) ^ left_state_;
+  left_state_ = right_state_;
+  right_state_ = new_right;
+}
 
-  // Combine the sides.
-  right_state_ ^= left_state_;
-
-  // Swap for next round.
-  ::std::swap(left_state_, right_state_);
+void FeistelCipher::DoDecRound(uint8_t key) {
+  // Update the state.
+  const uint8_t new_left = f_function_.Call(left_state_, key) ^ right_state_;
+  right_state_ = left_state_;
+  left_state_ = new_left;
 }
 
 uint8_t FeistelCipher::GetOutput() {

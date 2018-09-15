@@ -4,10 +4,8 @@ namespace hw1 {
 namespace {
 
 // Bit orders for expansion.
-//const uint16_t kExpLeftBitOrder[] = {3, 0, 1, 2};
-//const uint16_t kExpRightBitOrder[] = {1, 2, 3, 0};
-const uint16_t kExpLeftBitOrder[] = {0, 1, 2, 3};
-const uint16_t kExpRightBitOrder[] = {0, 1, 2, 3};
+const uint16_t kExpLeftBitOrder[] = {3, 0, 1, 2};
+const uint16_t kExpRightBitOrder[] = {1, 2, 3, 0};
 
 // Bit order for final permutation.
 const uint16_t kFinalBitOrder[] = {1, 3, 2, 0};

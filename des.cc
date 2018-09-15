@@ -4,7 +4,7 @@ namespace hw1 {
 namespace {
 
 // Number of rounds to perform.
-const uint8_t kNumRounds = 1;
+const uint8_t kNumRounds = 2;
 
 }  // namespace
 
@@ -40,7 +40,7 @@ uint8_t Des::EncryptBlock(uint8_t plain) {
   cipher_.SetInput(plain);
 
   for (const auto key : subkeys_) {
-    cipher_.DoRound(key);
+    cipher_.DoEncRound(key);
   }
 
   return cipher_.GetOutput();
@@ -52,7 +52,7 @@ uint8_t Des::DecryptBlock(uint8_t cipher) {
 
   // For decryption, we need to use the subkeys in reverse.
   for (int32_t i = subkeys_.size() - 1; i >= 0; --i) {
-    cipher_.DoRound(subkeys_[i]);
+    cipher_.DoDecRound(subkeys_[i]);
   }
 
   return cipher_.GetOutput();
