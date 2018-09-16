@@ -3,20 +3,18 @@
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
 
 #include <algorithm>
 
+#include "constants.h"
+
 namespace hw1 {
 namespace transfer {
 namespace {
-
-// Size of message header, in bytes.
-const uint8_t kMessageHeaderSize = 36;
-// Size of a file chunk, in bytes.
-const uint32_t kChunkSize = 1024;
 
 // Binds a socket to a port.
 // Args:
@@ -55,6 +53,10 @@ Server::~Server() {
   delete[] header_buffer_;
   delete[] chunk_buffer_;
   delete[] plain_chunk_buffer_;
+
+  // Cleanup the client and close the server.
+  CleanUp();
+  close(socket_);
 }
 
 bool Server::Listen(uint16_t port) {
@@ -122,7 +124,7 @@ bool Server::HandleMessage() {
   }
   if (bread != kMessageHeaderSize) {
     // The header should always be exactly the same size.
-    fprintf(stderr, "ERROR: Received inproper message header.");
+    fprintf(stderr, "ERROR: Received improper message header.\n");
     return false;
   }
 
@@ -132,8 +134,10 @@ bool Server::HandleMessage() {
   // Get the file name and message length. The filename should have a trailing
   // NULL, so we can just look at the start of the buffer.
   const char *filename = header_buffer_;
-  const uint32_t file_size =
-      atoi(header_buffer_ + kMessageHeaderSize - sizeof(uint32_t));
+  uint32_t file_size;
+  memcpy((uint8_t *)&file_size,
+         header_buffer_ + kMessageHeaderSize - sizeof(uint32_t),
+         sizeof(uint32_t));
 
   return ReceiveFile(filename, file_size);
 }
