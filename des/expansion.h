@@ -1,7 +1,7 @@
 #ifndef HW1_EXPANSION_H_
 #define HW1_EXPANSION_H_
 
-#include "p_box.h"
+#include "common/p_box.h"
 
 namespace hw1 {
 

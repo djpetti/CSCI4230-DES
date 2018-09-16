@@ -1,7 +1,7 @@
 #ifndef HW1_DES_S_BOX_H_
 #define HW1_DES_S_BOX_H_
 
-#include "s_box.h"
+#include "common/s_box.h"
 
 namespace hw1 {
 

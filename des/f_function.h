@@ -3,9 +3,9 @@
 
 #include <stdint.h>
 
+#include "common/p_box.h"
 #include "des_s_box.h"
 #include "expansion.h"
-#include "p_box.h"
 
 namespace hw1 {
 

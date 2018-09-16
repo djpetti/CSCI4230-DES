@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "p_box.h"
+#include "common/p_box.h"
 
 namespace hw1 {
 
