@@ -9,7 +9,7 @@
 //  program: The name of the program.
 void PrintHelpAndExit(const char *program) {
   printf("Usage: %s server port encryption_key file\n", program);
-  printf("(Key must be 2 characters long.\n");
+  printf("(Key must be 2 characters long.)\n");
   exit(1);
 }
 
