@@ -43,7 +43,7 @@ the same name as the one sent will be written to the server machine.
 # Explanation of the Code
 
 The implemenation of the code is fairly simple. The server can only handle a
-single connection at a time. The client connects to the server, and
+single TCP connection at a time. The client connects to the server, and
 encrypts/sends the file data block-by-block. The server uses the same process on
 the other end to decrypt the data.
 
@@ -57,7 +57,7 @@ the size of the file. It is not encrypted.
 # Explanation of the Algorithm
 
 The algorithm used is a 2-round Feistel cipher that operates on blocks of a
-single byte. The round function uses 2 S-boxes which take a 4-bit input and
-produce a 4-bit output. Each subkey is 8-bits, and generated each round from a
+single byte. The round function uses 2 S-boxes which each take a 4-bit input and
+produce a 2-bit output. Each subkey is 8-bits, and generated each round from a
 10-bit master key. Decryption is implemented as encryption in reverse, with the
 subkeys applied in the opposite order.
