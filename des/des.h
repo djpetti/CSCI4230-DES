@@ -16,7 +16,9 @@ class Des {
   // Args:
   //  key: The 10-bit key to use for encryption and decryption, as a 2-length
   //       byte array.
-  Des(const uint8_t *key);
+  //  rounds: Optionally, allows us to manually specify the number of rounds.
+  //          The default is 2.
+  Des(const uint8_t *key, uint8_t rounds = 2);
 
   // Encrypts a new message.
   // Args:
@@ -46,6 +48,9 @@ class Des {
   // Returns:
   //  The plaintext block.
   uint8_t DecryptBlock(uint8_t cipher);
+
+  // Number of rounds to perform.
+  uint8_t num_rounds_;
 
   // The feistel cipher to use internally for encryption and decyption.
   FeistelCipher cipher_;

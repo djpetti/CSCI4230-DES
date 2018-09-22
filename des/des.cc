@@ -1,14 +1,9 @@
 #include "des.h"
 
 namespace hw1 {
-namespace {
 
-// Number of rounds to perform.
-const uint8_t kNumRounds = 2;
-
-}  // namespace
-
-Des::Des(const uint8_t *key) : key_gen_(key) {}
+Des::Des(const uint8_t *key, uint8_t rounds /*=2*/)
+    : num_rounds_(rounds), key_gen_(key) {}
 
 void Des::Encrypt(const char *plain, uint32_t length, char *cipher) {
   GenSubKeys();
@@ -29,7 +24,7 @@ void Des::Decrypt(const char *cipher, uint32_t length, char *plain) {
 }
 
 void Des::GenSubKeys() {
-  while (subkeys_.size() < kNumRounds) {
+  while (subkeys_.size() < num_rounds_) {
     // Generate subkeys.
     subkeys_.push_back(key_gen_.GenNext());
   }
