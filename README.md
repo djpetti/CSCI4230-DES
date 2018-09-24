@@ -61,3 +61,12 @@ single byte. The round function uses 2 S-boxes which each take a 4-bit input and
 produce a 2-bit output. Each subkey is 8-bits, and generated each round from a
 10-bit master key. Decryption is implemented as encryption in reverse, with the
 subkeys applied in the opposite order.
+
+# Additional Analysis
+
+I have performed differential cryptoanalysis on this algorithm, the results of
+which are available
+[here](https://github.com/djpetti/CSCI4230-DES/blob/master/diff_crypto.md).
+
+Additionally, I have a solution to the last problem on the homework
+[here](https://github.com/djpetti/CSCI4230-DES/blob/master/entropy.md).
