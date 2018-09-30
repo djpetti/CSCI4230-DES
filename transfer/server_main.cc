@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "server.h"
+#include "file_server.h"
 
 // Shows the help message and exits the program.
 // Args:
