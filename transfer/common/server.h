@@ -20,6 +20,11 @@ class Server {
   Server(const uint8_t *key, uint32_t chunk_size);
   ~Server();
 
+  // Sets the key to use for encrypting and decrypting data.
+  // Args:
+  //  key: The key to set, as a 2-length byte array.
+  void SetKey(const uint8_t *key);
+
   // Starts the server listening. This should be called before handling
   // connections.
   // Args:

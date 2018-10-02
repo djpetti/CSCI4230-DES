@@ -3,5 +3,6 @@ cc_library(
   srcs = glob(["*.cc"]),
   hdrs = glob(["*.h"]),
   deps = ["//des:des"],
-  visibility = ["//transfer:__subpackages__"],
+  visibility = ["//transfer:__subpackages__",
+                "//key_exchange:__subpackages__"],
 )

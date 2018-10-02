@@ -14,6 +14,11 @@ class KeyGen {
   //  start_key: The initial 10-bit key, in an array of two uint8_ts.
   KeyGen(const uint8_t *start_key);
 
+  // Resets the state of the key generator with a new starting key.
+  // Args:
+  //  key: The new starting key, as a 2-length byte array.
+  void Reset(const uint8_t *key);
+
   // Generates the next subkey.
   // Returns:
   //  The next 8-bit subkey.

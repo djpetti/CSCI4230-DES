@@ -57,6 +57,10 @@ Server::~Server() {
   close(socket_);
 }
 
+void Server::SetKey(const uint8_t *key) {
+  des_.SetKey(key);
+}
+
 bool Server::Listen(uint16_t port) {
   // Create the socket.
   socket_ = socket(AF_INET, SOCK_STREAM, 0);

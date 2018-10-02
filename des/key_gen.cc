@@ -16,6 +16,11 @@ KeyGen::KeyGen(const uint8_t *start_key)
   initial_perm_.Permute(start_key, state_);
 }
 
+void KeyGen::Reset(const uint8_t *key) {
+  // Redo initial permutation.
+  initial_perm_.Permute(key, state_);
+}
+
 uint8_t KeyGen::GenNext() {
   // Extract left and right 5 bits.
   uint8_t left_state = state_[0] & (0xFF >> 3);

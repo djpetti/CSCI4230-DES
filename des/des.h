@@ -20,6 +20,11 @@ class Des {
   //          The default is 2.
   Des(const uint8_t *key, uint8_t rounds = 2);
 
+  // Changes the key to use for encryption and decryption.
+  // Args:
+  //  key: The key to set, as a 2-length byte array.
+  void SetKey(const uint8_t *key);
+
   // Encrypts a new message.
   // Args:
   //  plain: The message to encrypt.
