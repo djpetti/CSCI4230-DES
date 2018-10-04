@@ -11,7 +11,8 @@ namespace {
 // Maximum message size we have to support, in bytes.
 const uint8_t kMaxMessageSize = 2 * 2 /* Key size. */ + 2 * 1 /* Client ID size.
                                                                */
-                                + 4 /* Nonce size. */;
+                                + 4 * 2                       /* Nonce size. */
+    ;
 // Dummy key to use for initialization.
 const uint8_t kDummyKey[] = {0, 0};
 
@@ -20,7 +21,9 @@ const uint8_t kDummyKey[] = {0, 0};
 // Initialize with a dummy key. (We'll set the correct key on-the-fly when we
 // need to send a message to the clients.)
 KeyServer::KeyServer()
-    : transfer::common::Server(kDummyKey, kMaxMessageSize), des_(kDummyKey) {}
+    : transfer::common::Server(kDummyKey, kMaxMessageSize),
+      des_(kDummyKey),
+      nonce_counter_(time(NULL)) {}
 
 void KeyServer::AddClient(uint8_t id, const uint8_t *key) {
   printf("Adding client with ID %u.\n", id);
@@ -101,12 +104,14 @@ bool KeyServer::GenerateAndSendKey(uint8_t id_a, uint8_t id_b, uint32_t nonce) {
     return false;
   }
 
-  // Make envelope for client B. It should contain one client ID and one session
-  // key.
-  const uint8_t envelope_size = 2 + 1;
+  // Make envelope for client B. It should contain one client ID, one session
+  // key, and one nonce.
+  const uint8_t envelope_size = 2 + 1 + 4;
   uint8_t plain_envelope[envelope_size];
   memcpy(plain_envelope, session_key, 2);
   memcpy(plain_envelope + 2, &id_a, 1);
+  const uint32_t session_nonce = GenerateNonce();
+  memcpy(plain_envelope + 3, &session_nonce, 4);
 
   // Encrypt the envelope.
   uint8_t envelope[envelope_size];
@@ -145,6 +150,10 @@ bool KeyServer::GenerateKey(uint8_t *key) {
   }
 
   return true;
+}
+
+uint32_t KeyServer::GenerateNonce() {
+  return nonce_counter_++;
 }
 
 }  // namespace key_exchange

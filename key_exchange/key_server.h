@@ -57,11 +57,19 @@ class KeyServer : public transfer::common::Server {
   // Returns:
   //  True upon successful generation, false otherwise.
   bool GenerateKey(uint8_t *key);
+  // Generates a new nonce value. It essentially does this by taking the current
+  // time and adding an incrementing counter value.
+  // Returns:
+  //  The generated nonce.
+  uint32_t GenerateNonce();
 
   // Maps client IDs to their corresponding keys.
   ::std::unordered_map<uint8_t, Key> client_keys_;
   // DES instance we use for encryption and decryption.
   Des des_;
+
+  // Counter for nonce values.
+  uint32_t nonce_counter_;
 };
 
 }  // namespace key_exchange

@@ -41,24 +41,12 @@ static bool bindSocket(int socket, int port) {
 }  // namespace
 
 Server::Server(const uint8_t *key, uint32_t chunk_size)
-    : chunk_size_(chunk_size), des_(key) {
-  // Allocate the buffers.
-  chunk_buffer_ = new char[chunk_size_];
-  plain_chunk_buffer_ = new char[chunk_size_];
-}
+    : SecureNode(key, chunk_size) {}
 
 Server::~Server() {
-  // Deallocate the buffers.
-  delete[] chunk_buffer_;
-  delete[] plain_chunk_buffer_;
-
   // Cleanup the client and close the server.
   CleanUp();
   close(socket_);
-}
-
-void Server::SetKey(const uint8_t *key) {
-  des_.SetKey(key);
 }
 
 bool Server::Listen(uint16_t port) {
@@ -106,14 +94,15 @@ bool Server::ClientConnected() {
   return client_sock_ != -1;
 }
 
-uint32_t Server::ReceiveChunk(char **buffer) {
-  return ReceiveChunk(buffer, chunk_size_);
-}
-
 uint32_t Server::ReceiveChunk(char **buffer, uint32_t length) {
   // Receive the next chunk.
-  const uint32_t actual_read =
+  const int32_t actual_read =
       recv(client_sock_, plain_chunk_buffer_, length, 0);
+  if (actual_read < 0) {
+    // Reading error.
+    perror("ERROR");
+    return 0;
+  }
   if (actual_read == 0) {
     // Client disconnected.
     CleanUp();
@@ -126,13 +115,14 @@ uint32_t Server::ReceiveChunk(char **buffer, uint32_t length) {
   return actual_read;
 }
 
-uint32_t Server::ReceiveAndDecryptChunk(char **buffer) {
-  return ReceiveAndDecryptChunk(buffer, chunk_size_);
-}
-
 uint32_t Server::ReceiveAndDecryptChunk(char **buffer, uint32_t length) {
   // Receive the next chunk.
-  const uint32_t actual_read = recv(client_sock_, chunk_buffer_, length, 0);
+  const int32_t actual_read = recv(client_sock_, chunk_buffer_, length, 0);
+  if (actual_read == -1) {
+    // Reading error.
+    perror("ERROR");
+    return 0;
+  }
   if (actual_read == 0) {
     // Client disconnected..
     CleanUp();
@@ -151,15 +141,6 @@ uint32_t Server::ReceiveAndDecryptChunk(char **buffer, uint32_t length) {
 uint32_t Server::SendChunk(const char *buffer, uint32_t length) {
   // Send the chunk.
   return send(client_sock_, buffer, length, 0);
-}
-
-uint32_t Server::EncryptAndSendChunk(const char *buffer, uint32_t length) {
-  // Encrypt the chunk.
-  const uint32_t encrypt_length = ::std::min(length, chunk_size_);
-  des_.Encrypt(buffer, encrypt_length, chunk_buffer_);
-
-  // Send the chunk.
-  return send(client_sock_, chunk_buffer_, encrypt_length, 0);
 }
 
 void Server::CleanUp() {
