@@ -90,63 +90,36 @@ bool Server::WaitForConnection() {
   return true;
 }
 
+uint32_t Server::ReceiveChunk(char **buffer) {
+  return SecureNode::ReceiveChunk(client_sock_, buffer);
+}
+
+uint32_t Server::ReceiveChunk(char **buffer, uint32_t length) {
+  return SecureNode::ReceiveChunk(client_sock_, buffer, length);
+}
+
+uint32_t Server::ReceiveAndDecryptChunk(char **buffer) {
+  return SecureNode::ReceiveAndDecryptChunk(client_sock_, buffer);
+}
+
+uint32_t Server::ReceiveAndDecryptChunk(char **buffer, uint32_t length) {
+  return SecureNode::ReceiveAndDecryptChunk(client_sock_, buffer, length);
+}
+
+uint32_t Server::SendChunk(const char *buffer, uint32_t length) {
+  return SecureNode::SendChunk(client_sock_, buffer, length);
+}
+
+uint32_t Server::EncryptAndSendChunk(const char *buffer, uint32_t length) {
+  return SecureNode::EncryptAndSendChunk(client_sock_, buffer, length);
+}
+
 bool Server::ClientConnected() {
   return client_sock_ != -1;
 }
 
-uint32_t Server::ReceiveChunk(char **buffer, uint32_t length) {
-  // Receive the next chunk.
-  const int32_t actual_read =
-      recv(client_sock_, plain_chunk_buffer_, length, 0);
-  if (actual_read < 0) {
-    // Reading error.
-    perror("ERROR");
-    return 0;
-  }
-  if (actual_read == 0) {
-    // Client disconnected.
-    CleanUp();
-    return 0;
-  }
-
-  // Set the buffer.
-  *buffer = plain_chunk_buffer_;
-
-  return actual_read;
-}
-
-uint32_t Server::ReceiveAndDecryptChunk(char **buffer, uint32_t length) {
-  // Receive the next chunk.
-  const int32_t actual_read = recv(client_sock_, chunk_buffer_, length, 0);
-  if (actual_read == -1) {
-    // Reading error.
-    perror("ERROR");
-    return 0;
-  }
-  if (actual_read == 0) {
-    // Client disconnected..
-    CleanUp();
-    return 0;
-  }
-
-  // Decrypt the chunk.
-  des_.Decrypt(chunk_buffer_, actual_read, plain_chunk_buffer_);
-
-  // Set the buffer.
-  *buffer = plain_chunk_buffer_;
-
-  return actual_read;
-}
-
-uint32_t Server::SendChunk(const char *buffer, uint32_t length) {
-  // Send the chunk.
-  return send(client_sock_, buffer, length, 0);
-}
-
 void Server::CleanUp() {
   printf("Client disconnected.\n");
-
-  // Close the socket.
   close(client_sock_);
   // Indicate that no client is connected.
   client_sock_ = -1;

@@ -28,41 +28,45 @@ class SecureNode {
  protected:
   // Receives a single chunk from the client.
   // Args:
+  //  socket: The socket to receive from.
   //  buffer: Will be set to the address of the buffer that the data is in.
   // Returns:
   //  The number of bytes that were received.
-  uint32_t ReceiveChunk(char **buffer);
+  uint32_t ReceiveChunk(int socket, char **buffer);
   // Same as above, but allows user to specify an optional length parameter.
   // This is the maximum amount of data we will try to receive.
   // Args:
   //  length: The maximum number of bytes to receive.
-  virtual uint32_t ReceiveChunk(char **buffer, uint32_t length) = 0;
+  uint32_t ReceiveChunk(int socket, char **buffer, uint32_t length);
   // Receives and decrypts a single chunk from the client.
   // Args:
+  //  socket: The socket to receive from.
   //  buffer: Will be set to the address of the buffer that the data is in.
   // Returns:
   //  The number of bytes that were received.
-  uint32_t ReceiveAndDecryptChunk(char **buffer);
+  uint32_t ReceiveAndDecryptChunk(int socket, char **buffer);
   // Same as above, but allows user to specify an optional length parameter.
   // This is the maximum amount of data we will try to receive.
   // Args:
   //  length: The maximum number of bytes to receive.
-  virtual uint32_t ReceiveAndDecryptChunk(char **buffer, uint32_t length) = 0;
+  uint32_t ReceiveAndDecryptChunk(int socket, char **buffer, uint32_t length);
 
   // Sends a single chunk to the client.
   // Args:
+  //  socket: The socket to send with.
   //  buffer: The buffer containing the message to be sent.
   //  length: The length of the message in bytes.
   // Returns:
   //  The number of bytes that it sent.
-  virtual uint32_t SendChunk(const char *buffer, uint32_t length) = 0;
+  uint32_t SendChunk(int socket, const char *buffer, uint32_t length);
   // Encrypts and sends a single chunk to the client.
   // Args:
+  //  socket: The socket to send with.
   //  buffer: The buffer containing the message to be sent.
   //  length: The length of the message in bytes.
   // Returns:
   //  The number of bytes that were sent.
-  uint32_t EncryptAndSendChunk(const char *buffer, uint32_t length);
+  uint32_t EncryptAndSendChunk(int socket, const char *buffer, uint32_t length);
 
   // Maximum size of chunks that we will be receiving.
   uint32_t chunk_size_;

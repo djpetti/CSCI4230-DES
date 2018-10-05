@@ -38,24 +38,13 @@ class Server : public SecureNode {
   //  True if a client is currently connected, false otherwise.
   bool ClientConnected();
 
-  // Receives a single chunk from the client.
-  // This is the maximum amount of data we will try to receive.
-  // Args:
-  //  length: The maximum number of bytes to receive.
-  virtual uint32_t ReceiveChunk(char **buffer, uint32_t length);
-  // Receives and decrypts a single chunk from the client.
-  // This is the maximum amount of data we will try to receive.
-  // Args:
-  //  length: The maximum number of bytes to receive.
-  virtual uint32_t ReceiveAndDecryptChunk(char **buffer, uint32_t length);
+  uint32_t ReceiveChunk(char **buffer);
+  uint32_t ReceiveChunk(char **buffer, uint32_t length);
+  uint32_t ReceiveAndDecryptChunk(char **buffer);
+  uint32_t ReceiveAndDecryptChunk(char **buffer, uint32_t length);
 
-  // Sends a single chunk to the client.
-  // Args:
-  //  buffer: The buffer containing the message to be sent.
-  //  length: The length of the message in bytes.
-  // Returns:
-  //  The number of bytes that it sent.
-  virtual uint32_t SendChunk(const char *buffer, uint32_t length);
+  uint32_t EncryptAndSendChunk(const char *buffer, uint32_t length);
+  uint32_t SendChunk(const char *buffer, uint32_t length);
 
   // Closes the client socket and indicates that no client is connected.
   void CleanUp();
