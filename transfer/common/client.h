@@ -28,6 +28,8 @@ class Client : public SecureNode {
   // Returns:
   //  True if the connection succeeded, false otherwise.
   bool Connect(const char *server, uint16_t port);
+  // Closes the existing connection.
+  void Close();
 
  protected:
   uint32_t ReceiveChunk(char **buffer);

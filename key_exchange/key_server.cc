@@ -4,15 +4,12 @@
 #include <string.h>
 #include <sys/random.h>
 
+#include "constants.h"
+
 namespace hw1 {
 namespace key_exchange {
 namespace {
 
-// Maximum message size we have to support, in bytes.
-const uint8_t kMaxMessageSize = 2 * 2 /* Key size. */ + 2 * 1 /* Client ID size.
-                                                               */
-                                + 4 * 2                       /* Nonce size. */
-    ;
 // Dummy key to use for initialization.
 const uint8_t kDummyKey[] = {0, 0};
 
@@ -21,9 +18,8 @@ const uint8_t kDummyKey[] = {0, 0};
 // Initialize with a dummy key. (We'll set the correct key on-the-fly when we
 // need to send a message to the clients.)
 KeyServer::KeyServer()
-    : transfer::common::Server(kDummyKey, kMaxMessageSize),
-      des_(kDummyKey),
-      nonce_counter_(time(NULL)) {}
+    : transfer::common::Server(kDummyKey, kKeyMessageSize),
+      des_(kDummyKey) {}
 
 void KeyServer::AddClient(uint8_t id, const uint8_t *key) {
   printf("Adding client with ID %u.\n", id);
@@ -83,7 +79,8 @@ bool KeyServer::GetFirstMessage(uint8_t *id_a, uint8_t *id_b, uint32_t *nonce) {
   ++buffer;
   memcpy(nonce, buffer, 4);
 
-  printf("Got key request from %u to %u.\n", *id_a, *id_b);
+  printf("Got key request from %u to %u with nonce %u.\n", *id_a, *id_b,
+         *nonce);
 
   return true;
 }
@@ -110,8 +107,10 @@ bool KeyServer::GenerateAndSendKey(uint8_t id_a, uint8_t id_b, uint32_t nonce) {
   uint8_t plain_envelope[envelope_size];
   memcpy(plain_envelope, session_key, 2);
   memcpy(plain_envelope + 2, &id_a, 1);
-  const uint32_t session_nonce = GenerateNonce();
+  const uint32_t session_nonce = nonce_generator_.Generate();
   memcpy(plain_envelope + 3, &session_nonce, 4);
+  printf("Generated session key 0x%X 0x%X, nonce %u.\n", session_key[0],
+         session_key[1], session_nonce);
 
   // Encrypt the envelope.
   uint8_t envelope[envelope_size];
@@ -150,10 +149,6 @@ bool KeyServer::GenerateKey(uint8_t *key) {
   }
 
   return true;
-}
-
-uint32_t KeyServer::GenerateNonce() {
-  return nonce_counter_++;
 }
 
 }  // namespace key_exchange

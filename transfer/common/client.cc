@@ -19,7 +19,7 @@ Client::Client(const uint8_t *key, uint32_t chunk_size)
 
 Client::~Client() {
   // Close the socket.
-  close(socket_);
+  Close();
 }
 
 bool Client::Connect(const char *server, uint16_t port) {
@@ -51,6 +51,11 @@ bool Client::Connect(const char *server, uint16_t port) {
   }
 
   return true;
+}
+
+void Client::Close() {
+  close(socket_);
+  socket_ = -1;
 }
 
 uint32_t Client::ReceiveChunk(char **buffer) {
