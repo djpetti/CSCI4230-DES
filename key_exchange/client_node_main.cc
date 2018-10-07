@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <iostream>
+
 #include "client_node.h"
 
 // The node ID for us to use.
@@ -42,6 +44,16 @@ int main(int argc, const char **argv) {
 
   if (!client.Connect(dest_server, dest_port)) {
     return 1;
+  }
+
+  // Send messages to the client.
+  char *message = new char[255];
+  while (true) {
+    printf("Message > ");
+    fflush(stdout);
+
+    ::std::cin.getline(message, 255);
+    client.SendMessage(message);
   }
 
   return 0;

@@ -46,13 +46,6 @@ class ClientNode : public transfer::common::Client {
   // Returns:
   //  True if it successfully sent the message, false otherwise.
   bool SendMessage(const char *message);
-  // Receives an encrypted message from the server.
-  // Args:
-  //  message: Will be populated with the received message.
-  //  length: Maximum length message to receive.
-  // Returns:
-  //  True if it successfully received the message, false otherwise.
-  bool ReceiveMessage(char *message, uint32_t length);
 
  private:
   // Requests a session key from the key server.
@@ -65,7 +58,7 @@ class ClientNode : public transfer::common::Client {
   // Args:
   //  session_key: Set to the received session key, as a 2-length byte array.
   //  node_envelope: Set to the encrypted envelope to send to the other node. It
-  //                 should be able to hold at least 3 bytes.
+  //                 should be able to hold at least 7 bytes.
   // Returns:
   //  True if receiving the message succeeded, false otherwise.
   bool ReceiveSessionKey(uint8_t *session_key, char *node_envelope);

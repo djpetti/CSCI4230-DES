@@ -16,3 +16,9 @@ cc_binary(
   srcs = ["client_node_main.cc"],
   deps = [":key_exchange"],
 )
+
+cc_binary(
+  name = "kdc_server_node",
+  srcs = ["server_node_main.cc"],
+  deps = [":key_exchange"],
+)

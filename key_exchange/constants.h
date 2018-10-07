@@ -11,6 +11,10 @@ const uint32_t kChunkSize = 1024;
 const uint8_t kKeyMessageSize = 2 * 2 /* Key size. */ + 2 * 1 /* Client ID size.
                                                                */
                                 + 4 * 2;                      /* Nonce size. */
+// Size of the handshake message, in bytes.
+const uint8_t kHandshakeMessageSize = 2 /* Key size. */ + 1 /* Client ID size.
+                                                             */
+                                      + 4;                  /* Nonce size. */
 
 }  // namespace key_exchange
 }  // namespace hw1

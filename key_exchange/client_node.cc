@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <algorithm>
+
 #include "constants.h"
 
 namespace hw1 {
@@ -42,7 +44,7 @@ bool ClientNode::Connect(const char *server, uint16_t port) {
   }
   // Receive the response.
   uint8_t session_key[2];
-  char node_envelope[3];
+  char node_envelope[kHandshakeMessageSize];
   if (!ReceiveSessionKey(session_key, node_envelope)) {
     return false;
   }
@@ -55,7 +57,7 @@ bool ClientNode::Connect(const char *server, uint16_t port) {
   }
 
   // Send the envelope with the session key.
-  if (!SendChunk(node_envelope, 3)) {
+  if (!SendChunk(node_envelope, kHandshakeMessageSize)) {
     return false;
   }
 
@@ -63,6 +65,21 @@ bool ClientNode::Connect(const char *server, uint16_t port) {
   SetKey(session_key);
 
   return true;
+}
+
+bool ClientNode::SendMessage(const char *message) {
+  // Calculate the length + the terminating null.
+  const uint16_t length = strlen(message) + 1;
+
+  // Write everything into the chunk buffer.
+  const uint32_t max_write = ::std::min((uint32_t)length, kChunkSize - 2);
+  memcpy(plain_chunk_buffer_, &length, 2);
+  memcpy(plain_chunk_buffer_ + 2, message, max_write);
+  // Make sure we have a \0 somewhere in there.
+  plain_chunk_buffer_[kChunkSize - 1] = '\0';
+
+  // Send it to the client.
+  return EncryptAndSendChunk(plain_chunk_buffer_, max_write + 2);
 }
 
 bool ClientNode::RequestSessionKey(const char *address) {
@@ -97,7 +114,7 @@ bool ClientNode::ReceiveSessionKey(uint8_t *session_key, char *node_envelope) {
   // Read the session key.
   memcpy(session_key, buffer, 2);
   // Read the envelope.
-  memcpy(node_envelope, buffer + 7, 3);
+  memcpy(node_envelope, buffer + 7, kHandshakeMessageSize);
 
   printf("Will now use session key 0x%X 0x%X.\n", session_key[0],
          session_key[1]);
