@@ -70,3 +70,8 @@ which are available
 
 Additionally, I have a solution to the last problem on the homework
 [here](https://github.com/djpetti/CSCI4230-DES/blob/master/entropy.md).
+
+# Homework 2
+
+[Here](https://www.evernote.com/shard/s625/sh/bcd5790a-d864-42da-a57c-937c967a752f/77aec4c45481d9a320d04d1c0a3e5b29)
+is a link to my second homework solutions.
