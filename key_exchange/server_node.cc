@@ -7,12 +7,29 @@
 
 namespace hw1 {
 namespace key_exchange {
+namespace {
 
-ServerNode::ServerNode(const uint8_t *key, uint8_t id)
-    : transfer::common::Server(key, kChunkSize), id_(id), kdc_key_(key) {}
+// Dummy key we use when we set up the client. We'll set the right key later
+// when we have it.
+const uint8_t kDummyKey[] = {0, 0};
+
+}  // namespace
+
+ServerNode::ServerNode(const char *kdc_address, uint16_t kdc_port, uint8_t id)
+    : transfer::common::Server(kDummyKey, kChunkSize),
+      id_(id),
+      key_manager_(kdc_address, kdc_port, id) {}
 
 bool ServerNode::HandleConnection() {
-  // First, wait for the connection.
+  // First, set the proper master key.
+  uint8_t kdc_key[2];
+  if (!key_manager_.GetMasterKey(kdc_key)) {
+    // Key exchange failed.
+    return false;
+  }
+  SetKey(kdc_key);
+
+  // Now, wait for the connection.
   if (!transfer::common::Server::WaitForConnection()) {
     return false;
   }
@@ -81,14 +98,6 @@ bool ServerNode::HandleTransaction() {
   printf("Received message: %s\n", buffer);
 
   return true;
-}
-
-void ServerNode::CleanUp() {
-  transfer::common::Server::CleanUp();
-
-  // Our implementation of CleanUp() also resets the encryption key back to the
-  // KDC master key.
-  SetKey(kdc_key_);
 }
 
 }  // namespace key_exchange

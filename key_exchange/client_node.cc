@@ -42,6 +42,7 @@ bool ClientNode::Connect(const char *server, uint16_t port) {
   uint8_t kdc_key[2];
   if (!key_manager_.GetMasterKey(kdc_key)) {
     // Key exchange failed.
+    printf("ERROR: Key exchange failed.\n");
     return false;
   }
   SetKey(kdc_key);

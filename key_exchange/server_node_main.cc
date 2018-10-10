@@ -8,27 +8,23 @@
 // Args:
 //  program: The name of the program.
 void PrintHelpAndExit(const char *program) {
-  printf("Usage: %s port key id\n", program);
-  printf("(Keys must be 2 characters long.)\n");
+  printf("Usage: %s port kdc_address kdc_port id\n", program);
   exit(1);
 }
 
 int main(int argc, const char **argv) {
   // Get the arguments.
-  if (argc != 4) {
+  if (argc != 5) {
     PrintHelpAndExit(argv[0]);
   }
 
   const uint32_t port = atoi(argv[1]);
-  const char *key = argv[2];
-  const uint8_t id = atoi(argv[3]);
-  if (strlen(key) != 2) {
-    // Key is not the right length.
-    PrintHelpAndExit(argv[0]);
-  }
+  const char *kdc_address = argv[2];
+  const uint32_t kdc_port = atoi(argv[3]);
+  const uint8_t id = atoi(argv[4]);
 
   // Create the server.
-  ::hw1::key_exchange::ServerNode server((const uint8_t *)key, id);
+  ::hw1::key_exchange::ServerNode server(kdc_address, kdc_port, id);
 
   if (!server.Listen(port)) {
     return 1;
