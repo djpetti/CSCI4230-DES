@@ -25,10 +25,6 @@ class KeyServer : public transfer::common::Server {
   // until the client disconnects.
   void HandleConnection();
 
- protected:
-  // Disconnects the client nicely.
-  void CleanUp();
-
  private:
   // Handles a single transaction from a client.
   // Returns:

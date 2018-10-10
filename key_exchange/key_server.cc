@@ -21,15 +21,6 @@ KeyServer::KeyServer()
     : transfer::common::Server(kDummyKey, kKeyMessageSize),
       des_(kDummyKey) {}
 
-void KeyServer::AddClient(uint8_t id, const uint8_t *key) {
-  printf("Adding client with ID %u.\n", id);
-
-  // Add it to the map.
-  Key my_key;
-  memcpy(my_key.Key, key, 2);
-  client_keys_[id] = my_key;
-}
-
 void KeyServer::HandleConnection() {
   // First, wait for a client to connect.
   WaitForConnection();
@@ -91,6 +82,9 @@ bool KeyServer::GetFirstMessage(uint8_t *id_a, uint8_t *id_b, uint32_t *nonce) {
 }
 
 bool KeyServer::GenerateAndSendKey(uint8_t id_a, uint8_t id_b, uint32_t nonce) {
+  // First, we're going to have to find the keys for each client.
+  auto key_a = client_keys_.find(id_a);
+  auto key_b = client_keys_.find(id_b);
   if (key_a == client_keys_.end()) {
     // We don't know this client. We have to perform key exchange before doing
     // anything else.
