@@ -88,11 +88,7 @@ bool KeyServer::GetFirstMessage(uint8_t *id_a, uint8_t *id_b, uint32_t *nonce) {
 bool KeyServer::GenerateAndSendKey(uint8_t id_a, uint8_t id_b, uint32_t nonce) {
   // First, we're going to have to find the keys for each client.
   auto key_a = client_keys_.find(id_a);
-  const auto &key_b = client_keys_.find(id_b);
-  if (key_b == client_keys_.end()) {
-    // We always have to be familiar with the destination.
-    return false;
-  }
+  auto key_b = client_keys_.find(id_b);
   if (key_a == client_keys_.end()) {
     // We don't know this client. We have to perform key exchange before doing
     // anything else.
@@ -101,8 +97,21 @@ bool KeyServer::GenerateAndSendKey(uint8_t id_a, uint8_t id_b, uint32_t nonce) {
       return false;
     }
 
-    // Find it again no that it's in there.
+    // Find it again now that it's in there.
     key_a = client_keys_.find(id_a);
+    // The other one might be in there as well.
+    key_b = client_keys_.find(id_b);
+  }
+  if (key_b == client_keys_.end()) {
+    // We always have to be familiar with the destination.
+    printf("ERROR: Unknown destination node %u.\n", id_b);
+    return false;
+  }
+  if (id_a == id_b) {
+    // This is a special case when we just want to perform a key exchange and
+    // nothing else.
+    printf("Aborting after key exchange.\n");
+    return true;
   }
 
   // Now, generate a new session key.

@@ -6,7 +6,7 @@
 #include <unordered_map>
 
 #include "transfer/common/client.h"
-#include "diffie_hellman.h"
+#include "key_manager.h"
 #include "nonce_generator.h"
 
 namespace hw1 {
@@ -60,30 +60,21 @@ class ClientNode : public transfer::common::Client {
   // Returns:
   //  True if receiving the message succeeded, false otherwise.
   bool ReceiveSessionKey(uint8_t *session_key, char *node_envelope);
-  // Performs the initial key exchange with the KDC.
-  // Returns:
-  //  True if the key exchange succeeded, false otherwise.
-  bool DoKeyExchange();
 
   // Saves the address of the key server.
   const char *kdc_address_;
   // Saves the port to communicate with the key server on.
   uint16_t kdc_port_;
-  // The master key to use for communicating with the KDC, as a 2-length byte
-  // array.
-  uint8_t kdc_key_[2];
-  // Whether the key exchange has completed successfully.
-  bool set_key_ = false;
 
   // The numerical ID of this node.
   uint8_t id_;
   // Associates node addresses with numerical IDs.
   ::std::unordered_map<const char *, uint8_t> node_ids_;
-  // Used for performing Diffie-Hellman.
-  DiffieHellman key_gen_;
 
   // Generator to use for producing nonces.
   NonceGenerator nonce_generator_;
+  // Used internally for exchanging master keys with the KDC.
+  KeyManager key_manager_;
 };
 
 }  // namespace key_exchange
