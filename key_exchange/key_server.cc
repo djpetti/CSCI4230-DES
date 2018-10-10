@@ -87,11 +87,22 @@ bool KeyServer::GetFirstMessage(uint8_t *id_a, uint8_t *id_b, uint32_t *nonce) {
 
 bool KeyServer::GenerateAndSendKey(uint8_t id_a, uint8_t id_b, uint32_t nonce) {
   // First, we're going to have to find the keys for each client.
-  const auto &key_a = client_keys_.find(id_a);
+  auto key_a = client_keys_.find(id_a);
   const auto &key_b = client_keys_.find(id_b);
-  if (key_a == client_keys_.end() || key_b == client_keys_.end()) {
-    // We received an invalid client ID.
+  if (key_b == client_keys_.end()) {
+    // We always have to be familiar with the destination.
     return false;
+  }
+  if (key_a == client_keys_.end()) {
+    // We don't know this client. We have to perform key exchange before doing
+    // anything else.
+    printf("Unknown node %u, performing key exchange.\n", id_a);
+    if (!DoKeyExchange(id_a)) {
+      return false;
+    }
+
+    // Find it again no that it's in there.
+    key_a = client_keys_.find(id_a);
   }
 
   // Now, generate a new session key.
@@ -147,6 +158,42 @@ bool KeyServer::GenerateKey(uint8_t *key) {
     perror("ERROR");
     return false;
   }
+
+  return true;
+}
+
+bool KeyServer::DoKeyExchange(uint8_t node_id) {
+  // First, generate a private key.
+  const uint64_t private_key = key_gen_.GeneratePrivateKey();
+  // Compute the corresponding public key.
+  const uint64_t public_key = key_gen_.ComputePublicKey(private_key);
+  printf("Computed public key: %lu\n", public_key);
+
+  // Send the public key.
+  if (!SendChunk((const char *)&public_key, 8)) {
+    return false;
+  }
+
+  // Wait for them to send us their public key.
+  char *buffer;
+  if (!ReceiveChunk(&buffer, 8)) {
+    return false;
+  }
+  uint64_t other_public_key;
+  memcpy((uint8_t *)&other_public_key, buffer, 8);
+  printf("Received public key: %lu\n", other_public_key);
+
+  // Generate the master key.
+  uint64_t session_key =
+      key_gen_.ComputeSessionKey(other_public_key, private_key);
+  // Truncate to 10 bits for use in DES.
+  Key des_key;
+  des_key.Key[0] = session_key & 0xFF;
+  des_key.Key[1] = (session_key >> 8) & 0x03;
+  printf("Computed master key: 0x%X 0x%X\n", des_key.Key[0], des_key.Key[1]);
+
+  // Save the key for the node.
+  client_keys_[node_id] = des_key;
 
   return true;
 }

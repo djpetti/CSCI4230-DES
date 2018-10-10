@@ -10,10 +10,16 @@
 
 namespace hw1 {
 namespace key_exchange {
+namespace {
 
-ClientNode::ClientNode(const char *kdc_address, const uint16_t port,
-                       const uint8_t *key, uint8_t id)
-    : transfer::common::Client(key, kChunkSize),
+// Dummy key we use when we set up the client. We'll set the right key later
+// when we have it.
+const uint8_t kDummyKey[] = {0, 0};
+
+}  // namespace
+
+ClientNode::ClientNode(const char *kdc_address, const uint16_t port, uint8_t id)
+    : transfer::common::Client(kDummyKey, kChunkSize),
       kdc_address_(kdc_address),
       kdc_port_(port),
       id_(id) {}
@@ -42,6 +48,16 @@ bool ClientNode::Connect(const char *server, uint16_t port) {
   if (!RequestSessionKey(server)) {
     return false;
   }
+
+  if (!set_key_) {
+    // We have not completed key exchange yet.
+    if (!DoKeyExchange()) {
+      return false;
+    }
+  }
+  // Set the key for communicating with the KDC.
+  SetKey(kdc_key_);
+
   // Receive the response.
   uint8_t session_key[2];
   char node_envelope[kHandshakeMessageSize];
@@ -119,6 +135,41 @@ bool ClientNode::ReceiveSessionKey(uint8_t *session_key, char *node_envelope) {
   printf("Will now use session key 0x%X 0x%X.\n", session_key[0],
          session_key[1]);
 
+  return true;
+}
+
+bool ClientNode::DoKeyExchange() {
+  printf("Performing key exchange with KDC.\n");
+
+  // First, generate a private key.
+  const uint64_t private_key = key_gen_.GeneratePrivateKey();
+  // Compute the corresponding public key.
+  const uint64_t public_key = key_gen_.ComputePublicKey(private_key);
+  printf("Computed public key: %lu\n", public_key);
+
+  // Receive the public key from the KDC.
+  char *buffer;
+  if (!ReceiveChunk(&buffer, 8)) {
+    return false;
+  }
+  uint64_t other_public_key;
+  memcpy((uint8_t *)&other_public_key, buffer, 8);
+  printf("Received public key: %lu\n", other_public_key);
+
+  // Send our public key to the KDC.
+  if (!SendChunk((const char *)&public_key, 8)) {
+    return false;
+  }
+
+  // Generate the master key.
+  uint64_t session_key =
+      key_gen_.ComputeSessionKey(other_public_key, private_key);
+  // Truncate to 10 bits for use in DES.
+  kdc_key_[0] = session_key & 0xFF;
+  kdc_key_[1] = (session_key >> 8) & 0x03;
+  printf("Computed master key: 0x%X 0x%X\n", kdc_key_[0], kdc_key_[1]);
+
+  set_key_ = true;
   return true;
 }
 

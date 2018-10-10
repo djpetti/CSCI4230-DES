@@ -5,6 +5,7 @@
 
 #include "des/des.h"
 #include "transfer/common/server.h"
+#include "diffie_hellman.h"
 #include "nonce_generator.h"
 
 namespace hw1 {
@@ -58,6 +59,12 @@ class KeyServer : public transfer::common::Server {
   // Returns:
   //  True upon successful generation, false otherwise.
   bool GenerateKey(uint8_t *key);
+  // Performs the initial Diffie-Hellman key exchange with a node.
+  // Args:
+  //  node_id: The node that we are setting a key for.
+  // Returns:
+  //  True if the exchange succeeded, false otherwise.
+  bool DoKeyExchange(uint8_t node_id);
 
   // Maps client IDs to their corresponding keys.
   ::std::unordered_map<uint8_t, Key> client_keys_;
@@ -65,6 +72,8 @@ class KeyServer : public transfer::common::Server {
   Des des_;
   // Nonce generator.
   NonceGenerator nonce_generator_;
+  // Used for performing the initial Diffie-Hellman key exchange.
+  DiffieHellman key_gen_;
 };
 
 }  // namespace key_exchange
