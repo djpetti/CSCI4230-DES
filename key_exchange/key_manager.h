@@ -18,7 +18,10 @@ class KeyManager : public transfer::common::Client {
   //  kdc_address: The address of the KDC.
   //  port: The port to connect to the KDC on.
   //  id: The numerical ID of this node.
-  KeyManager(const char *kdc_address, const uint16_t port, uint8_t id);
+  //  nonce_generator: Share the same nonce generator with host so that our
+  //                    requests have valid nonces.
+  KeyManager(const char *kdc_address, const uint16_t port, uint8_t id,
+             NonceGenerator *nonce_generator);
 
   // Gets the master key to use for communicating with the KDC. It will
   // automatically perform the key exchange if this key is not set.
@@ -60,7 +63,7 @@ class KeyManager : public transfer::common::Client {
   // Diffie-Hellman implementation that we use for generating keys.
   DiffieHellman key_gen_;
   // Use for generating nonces.
-  NonceGenerator nonce_generator_;
+  NonceGenerator *nonce_generator_;
 };
 
 }  // namespace key_exchange

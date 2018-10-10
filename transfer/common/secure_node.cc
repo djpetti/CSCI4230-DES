@@ -91,6 +91,24 @@ uint32_t SecureNode::EncryptAndSendChunk(int socket, const char *buffer,
   return SendChunk(socket, chunk_buffer_, encrypt_length);
 }
 
+bool SecureNode::VerifyNonce(uint8_t id, uint32_t nonce) {
+  const auto &old_nonce = nonces_.find(id);
+  if (old_nonce == nonces_.end()) {
+    // First time we've received a nonce from this client.
+    nonces_[id] = nonce;
+    return true;
+  }
+
+  // Check that the nonce increased.
+  if (nonce <= old_nonce->second) {
+    printf("Rejecting message due to bad nonce.\n");
+    return false;
+  }
+  nonces_[id] = nonce;
+
+  return true;
+}
+
 }  // namespace common
 }  // namespace transfer
 }  // namespace hw1

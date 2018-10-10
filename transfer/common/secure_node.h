@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include <unordered_map>
+
 #include "des/des.h"
 
 namespace hw1 {
@@ -68,6 +70,14 @@ class SecureNode {
   //  The number of bytes that were sent.
   uint32_t EncryptAndSendChunk(int socket, const char *buffer, uint32_t length);
 
+  // Verifies that a nonce is valid.
+  // Args:
+  //  id: The ID of the node that the nonce came from.
+  //  nonce: The nonce value.
+  // Returns:
+  //  True if the nonce is valid, false otherwise.
+  bool VerifyNonce(uint8_t id, uint32_t nonce);
+
   // Maximum size of chunks that we will be receiving.
   uint32_t chunk_size_;
 
@@ -78,6 +88,10 @@ class SecureNode {
 
   // DES implementation to use for encryption and decryption.
   Des des_;
+
+ private:
+  // Maps node IDs to the last nonces that we've received from them.
+  ::std::unordered_map<uint8_t, uint32_t> nonces_;
 };
 
 }  // namespace common

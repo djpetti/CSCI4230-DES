@@ -15,11 +15,13 @@ const uint8_t kDummyKey[] = {0, 0};
 
 }
 
-KeyManager::KeyManager(const char *kdc_address, const uint16_t port, uint8_t id)
+KeyManager::KeyManager(const char *kdc_address, const uint16_t port, uint8_t id,
+                       NonceGenerator *nonce_generator)
     : transfer::common::Client(kDummyKey, 8),
       kdc_address_(kdc_address),
       kdc_port_(port),
-      id_(id) {}
+      id_(id),
+      nonce_generator_(nonce_generator) {}
 
 bool KeyManager::GetMasterKey(uint8_t *key) {
   // Perform the key exhange if necessary.
@@ -62,7 +64,7 @@ bool KeyManager::EnsureKeyExchanged() {
 
 bool KeyManager::SendKeyRequest() {
   // Format a request for a session key.
-  const uint32_t nonce = nonce_generator_.Generate();
+  const uint32_t nonce = nonce_generator_->Generate();
   char *write_at = plain_chunk_buffer_;
   memcpy(write_at++, &id_, 1);
   // Set the second ID field to be the same. This indicates the the KDC that we

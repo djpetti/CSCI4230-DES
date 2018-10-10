@@ -21,14 +21,13 @@ class KeyServer : public transfer::common::Server {
  public:
   KeyServer();
 
-  // Adds a new client that the server can handle requests from.
-  // Args:
-  //  id: The ID of the client.
-  //  key: The 10-bit client key, as a 2-length byte array.
-  void AddClient(uint8_t id, const uint8_t *key);
   // Waits for a client to connect, and handles all requests from that client,
   // until the client disconnects.
   void HandleConnection();
+
+ protected:
+  // Disconnects the client nicely.
+  void CleanUp();
 
  private:
   // Handles a single transaction from a client.
@@ -68,6 +67,8 @@ class KeyServer : public transfer::common::Server {
 
   // Maps client IDs to their corresponding keys.
   ::std::unordered_map<uint8_t, Key> client_keys_;
+  // Maps client IDs to the last nonce value we received from that client.
+  ::std::unordered_map<uint8_t, uint32_t> nonces_;
   // DES instance we use for encryption and decryption.
   Des des_;
   // Nonce generator.

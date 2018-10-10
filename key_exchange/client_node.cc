@@ -23,7 +23,7 @@ ClientNode::ClientNode(const char *kdc_address, const uint16_t port, uint8_t id)
       kdc_address_(kdc_address),
       kdc_port_(port),
       id_(id),
-      key_manager_(kdc_address, port, id) {}
+      key_manager_(kdc_address, port, id, &nonce_generator_) {}
 
 void ClientNode::AddNodeWithId(const char *address, uint8_t id) {
   printf("Adding node with address %s and ID %u.\n", address, id);

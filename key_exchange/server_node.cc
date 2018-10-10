@@ -18,24 +18,27 @@ const uint8_t kDummyKey[] = {0, 0};
 ServerNode::ServerNode(const char *kdc_address, uint16_t kdc_port, uint8_t id)
     : transfer::common::Server(kDummyKey, kChunkSize),
       id_(id),
-      key_manager_(kdc_address, kdc_port, id) {}
+      key_manager_(kdc_address, kdc_port, id, &nonce_generator_) {}
 
 bool ServerNode::HandleConnection() {
   // First, set the proper master key.
   uint8_t kdc_key[2];
   if (!key_manager_.GetMasterKey(kdc_key)) {
     // Key exchange failed.
+    CleanUp();
     return false;
   }
   SetKey(kdc_key);
 
   // Now, wait for the connection.
   if (!transfer::common::Server::WaitForConnection()) {
+    CleanUp();
     return false;
   }
 
   // Now, perform the handshake.
   if (!DoHandshake()) {
+    CleanUp();
     return false;
   }
 
@@ -56,8 +59,6 @@ bool ServerNode::DoHandshake() {
   if (!ReceiveAndDecryptChunk(&buffer, kHandshakeMessageSize)) {
     // Failed to receive the handshake message.
     fprintf(stderr, "Handshake with client failed.\n");
-    // Disconnect.
-    CleanUp();
     return false;
   }
 
@@ -71,6 +72,11 @@ bool ServerNode::DoHandshake() {
 
   printf("Connected to client %u with key 0x%X 0x%X and nonce %u.\n", client_id,
          session_key[0], session_key[1], nonce);
+
+  if (!VerifyNonce(client_id, nonce)) {
+    // Nonce is invalid.
+    return false;
+  }
 
   // Set it to encrypt further transactions with the session key.
   SetKey(session_key);

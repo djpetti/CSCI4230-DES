@@ -5,6 +5,7 @@
 
 #include "transfer/common/server.h"
 #include "key_manager.h"
+#include "nonce_generator.h"
 
 namespace hw1 {
 namespace key_exchange {
@@ -43,6 +44,8 @@ class ServerNode : public transfer::common::Server {
   // The numerical ID of this node.
   uint8_t id_;
 
+  // Use this for generating nonces.
+  NonceGenerator nonce_generator_;
   // Manages key exchange between this node and the KDC.
   KeyManager key_manager_;
 };

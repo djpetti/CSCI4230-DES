@@ -82,13 +82,15 @@ bool KeyServer::GetFirstMessage(uint8_t *id_a, uint8_t *id_b, uint32_t *nonce) {
   printf("Got key request from %u to %u with nonce %u.\n", *id_a, *id_b,
          *nonce);
 
+  if (!VerifyNonce(*id_a, *nonce)) {
+    // Invalid nonce.
+    return false;
+  }
+
   return true;
 }
 
 bool KeyServer::GenerateAndSendKey(uint8_t id_a, uint8_t id_b, uint32_t nonce) {
-  // First, we're going to have to find the keys for each client.
-  auto key_a = client_keys_.find(id_a);
-  auto key_b = client_keys_.find(id_b);
   if (key_a == client_keys_.end()) {
     // We don't know this client. We have to perform key exchange before doing
     // anything else.
