@@ -1,5 +1,9 @@
 # Toy DES demonstration for CSCI 4230
 
+If you are looking for homework 2,
+[here](https://github.com/djpetti/CSCI4230-DES/blob/master/hw2_explanation.md)
+is a link to it.
+
 This repository implements a toy version of the DES algorithm that encrypts 8-bit
 blocks with 10-bit keys and performs a total of two rounds. It is not
 particularly secure, but it is useful for educational purposes.
@@ -12,7 +16,7 @@ A demonstration application is provided that uses the DES implementation to
 To build the code, use Bazel:
 
 ```
-~$ bazel build //transfer:server //transfer:client
+~$ bazel build ...
 ```
 
 All the executables will be in the `bazel-bin/transfer` directory.
