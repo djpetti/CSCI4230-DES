@@ -1,9 +1,8 @@
 cc_library(
-  name = "des",
+  name = "common",
   srcs = glob(["*.cc"]),
   hdrs = glob(["*.h"]),
-  deps = ["//des/common"],
+  deps = ["//des:des"],
   visibility = ["//transfer:__subpackages__",
-                "//analysis:__subpackages__",
                 "//key_exchange:__subpackages__"],
 )

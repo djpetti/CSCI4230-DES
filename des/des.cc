@@ -5,6 +5,13 @@ namespace hw1 {
 Des::Des(const uint8_t *key, uint8_t rounds /*=2*/)
     : num_rounds_(rounds), key_gen_(key) {}
 
+void Des::SetKey(const uint8_t *key) {
+  // Reset the key generator.
+  key_gen_.Reset(key);
+  // Clear the generated subkeys.
+  subkeys_.clear();
+}
+
 void Des::Encrypt(const char *plain, uint32_t length, char *cipher) {
   GenSubKeys();
 

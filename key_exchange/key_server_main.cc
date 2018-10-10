@@ -2,32 +2,27 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "file_server.h"
+#include "key_server.h"
 
 // Shows the help message and exits the program.
 // Args:
 //  program: The name of the program.
 void PrintHelpAndExit(const char *program) {
-  printf("Usage: %s port encryption_key\n", program);
-  printf("(Key must be 2 characters long.)\n");
+  printf("Usage: %s port\n", program);
   exit(1);
 }
 
 int main(int argc, const char **argv) {
   // Get the arguments.
-  if (argc != 3) {
+  if (argc != 2) {
     PrintHelpAndExit(argv[0]);
   }
 
   const uint32_t port = atoi(argv[1]);
-  const char *key = argv[2];
-  if (strlen(key) != 2) {
-    // Key is not the right length.
-    PrintHelpAndExit(argv[0]);
-  }
 
   // Create the server.
-  ::hw1::transfer::Server server((const uint8_t *)key);
+  ::hw1::key_exchange::KeyServer server;
+
   if (!server.Listen(port)) {
     return 1;
   }

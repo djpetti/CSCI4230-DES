@@ -2,7 +2,8 @@ cc_library(
   name = "transfer",
   srcs = glob(["*.cc"], exclude=["*_main.cc"]),
   hdrs = glob(["*.h"]),
-  deps = ["//des:des"],
+  deps = ["//des:des",
+          "//transfer/common:common"],
 )
 
 cc_binary(
