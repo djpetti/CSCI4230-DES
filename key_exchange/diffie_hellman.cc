@@ -23,16 +23,13 @@ const uint64_t kGenerator = 3;
 // Returns:
 //  base^exp % mod
 uint64_t Power(uint64_t base, uint64_t exp, uint64_t mod) {
-  uint64_t c = 0;
   uint64_t pow = 1;
   for (uint8_t i = 0; i < 64; ++i) {
     const uint8_t bit = 63 - i;
 
-    c *= 2;
     pow *= pow;
     pow %= mod;
-    if (exp & (1 << bit)) {
-      ++c;
+    if (exp & ((uint64_t)1 << bit)) {
       pow *= base;
       pow %= mod;
     }
