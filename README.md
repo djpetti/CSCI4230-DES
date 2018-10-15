@@ -77,5 +77,8 @@ Additionally, I have a solution to the last problem on the homework
 
 # Homework 2
 
-[Here](https://www.evernote.com/shard/s625/sh/bcd5790a-d864-42da-a57c-937c967a752f/77aec4c45481d9a320d04d1c0a3e5b29)
+- [Here](https://www.evernote.com/shard/s625/sh/bcd5790a-d864-42da-a57c-937c967a752f/77aec4c45481d9a320d04d1c0a3e5b29)
 is a link to my second homework solutions.
+
+- [Here](https://www.evernote.com/shard/s625/sh/0dbe2e4e-4c5c-43b4-9ad1-4e11d2bb12b6/d022c3aa4e37ca3651a17b7b450fe62b)
+  is a link to part 2 of my second homework solutions.
