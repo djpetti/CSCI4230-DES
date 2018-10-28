@@ -2,7 +2,9 @@ cc_library(
   name = "key_exchange",
   srcs = glob(["*.cc"], exclude=["*_main.cc"]),
   hdrs = glob(["*.h"]),
-  deps = ["//des", "//transfer/common"],
+  deps = ["//des",
+          "//transfer/common",
+          "//numerical"],
 )
 
 cc_binary(

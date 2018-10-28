@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <sys/random.h>
 
+#include "numerical/mod.h"
+
 namespace hw1 {
 namespace key_exchange {
 namespace {
@@ -14,41 +16,17 @@ const uint64_t kModulo = 2698727;
 // that it isn't is pretty low.
 const uint64_t kGenerator = 3;
 
-// Implementation of square and multiply algorithm for module integer
-// exponentiation.
-// Args:
-//  base: The base.
-//  exp: The exponent.
-//  mod: The modulo.
-// Returns:
-//  base^exp % mod
-uint64_t Power(uint64_t base, uint64_t exp, uint64_t mod) {
-  uint64_t pow = 1;
-  for (uint8_t i = 0; i < 64; ++i) {
-    const uint8_t bit = 63 - i;
-
-    pow *= pow;
-    pow %= mod;
-    if (exp & ((uint64_t)1 << bit)) {
-      pow *= base;
-      pow %= mod;
-    }
-  }
-
-  return pow;
-}
-
 }  // namespace
 
 uint64_t DiffieHellman::ComputePublicKey(uint64_t private_key) {
   // Note that the user is responsible for avoiding integer overflows.
-  return Power(kGenerator, private_key, kModulo);
+  return numerical::Power(kGenerator, private_key, kModulo);
 }
 
 uint64_t DiffieHellman::ComputeSessionKey(uint64_t pub_key,
                                           uint64_t private_key) {
   // Note that the user is responsible for avoiding integer overflows.
-  return Power(pub_key, private_key, kModulo);
+  return numerical::Power(pub_key, private_key, kModulo);
 }
 
 uint64_t DiffieHellman::GeneratePrivateKey() {
