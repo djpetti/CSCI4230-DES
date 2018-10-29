@@ -1,5 +1,9 @@
 # Toy DES demonstration for CSCI 4230
 
+If you are looking for the makeup exam answers,
+[here](https://github.com/djpetti/CSCI4230-DES/blob/master/makeup_exam/README.md)
+is a link to them.
+
 If you are looking for homework 2,
 [here](https://github.com/djpetti/CSCI4230-DES/blob/master/hw2_explanation.md)
 is a link to it.
