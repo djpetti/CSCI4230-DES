@@ -1,4 +1,8 @@
-# Toy DES demonstration for CSCI 4230
+# Monorepo for CSCI 4230
+
+If you are looking for homework 3,
+[here](https://github.com/djpetti/CSCI4230-DES/blob/master/semantic_security/)
+is a link to it.
 
 If you are looking for the makeup exam answers,
 [here](https://github.com/djpetti/CSCI4230-DES/blob/master/makeup_exam/README.md)
